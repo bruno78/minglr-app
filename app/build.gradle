@@ -24,7 +24,7 @@ dependencies {
     implementation 'com.android.support.constraint:constraint-layout:1.1.0'
 
     // Add this line to support annotations for test and end conflict when starting new project
-    implementation ('com.android.support:support-annotations:27.1.1')
+    implementation('com.android.support:support-annotations:27.1.1')
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
@@ -32,4 +32,10 @@ dependencies {
     // Implementing Swipecards library
     compile 'com.lorentzos.swipecards:library:1.0.9'
 
+    // Implementing Firebase
+    implementation 'com.google.firebase:firebase-core:15.0.2'
+    compile 'com.google.firebase:firebase-database:15.0.0'
+    compile 'com.google.firebase:firebase-auth:15.1.0'
 }
+
+apply plugin: 'com.google.gms.google-services'
