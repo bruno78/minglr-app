@@ -7,6 +7,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -14,11 +16,15 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 public class SignupActivity extends AppCompatActivity {
 
-    private EditText mEmail, mPassword;
+    private EditText mEmail, mPassword, mName;
     private Button mSignup;
+
+    private RadioGroup mSexRadioGroup;
 
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
@@ -29,8 +35,11 @@ public class SignupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup);
 
+        mName = (EditText) findViewById(R.id.et_name);
         mEmail = (EditText) findViewById(R.id.et_signup_email);
         mPassword = (EditText) findViewById(R.id.et_signup_password);
+        mSexRadioGroup = (RadioGroup) findViewById(R.id.rg_sex);
+
         mSignup = (Button) findViewById(R.id.bt_signup);
 
         mAuth = FirebaseAuth.getInstance();
@@ -55,14 +64,34 @@ public class SignupActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
+                // Getting the selected Radio Group option id
+                int selectedId = mSexRadioGroup.getCheckedRadioButtonId();
+
+                // Use the selected Radio Group option id to find which button was selected to pass to Firebase
+                final RadioButton radioButton = (RadioButton) findViewById(selectedId);
+
+                // Check if the user has NOT chosen something it quits before trigger the rest of operation
+                if(radioButton.getText() == null) {
+                    return;
+                }
+
+                final String name = mName.getText().toString();
                 final String email = mEmail.getText().toString();
                 final String password = mPassword.getText().toString();
+
                 mAuth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(SignupActivity.this,
                         new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if(!task.isSuccessful()) {
                                     Toast.makeText(SignupActivity.this, "Sign up error", Toast.LENGTH_SHORT).show();
+                                }
+                                else {
+                                    String userId = mAuth.getCurrentUser().getUid();
+                                    DatabaseReference currentUserDb = FirebaseDatabase.getInstance()
+                                            .getReference().child("Users").child(radioButton.getText().toString())
+                                            .child(userId).child("name");
+                                    currentUserDb.setValue(name);
                                 }
                             }
                         });
