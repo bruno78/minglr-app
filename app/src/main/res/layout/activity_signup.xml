@@ -4,19 +4,24 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.brunogtavares.minglr.ChooseLoginRegistrationActivity">
+    tools:context="com.brunogtavares.minglr.SignupActivity">
+    
+    <EditText
+        android:id="@+id/et_signup_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="email"/>
+
+    <EditText
+        android:id="@+id/et_signup_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="password"/>
 
     <Button
-        android:id="@+id/bt_to_login_page"
+        android:id="@+id/bt_signup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Login"
-        tools:text="Login"/>
-    <Button
-        android:id="@+id/bt_to_signup_page"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Signup"
-        tools:text="SignUp"/>
+        android:text="Signup"/>
 
 </LinearLayout>
