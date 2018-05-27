@@ -32,6 +32,9 @@ dependencies {
     // Implementing Swipecards library
     implementation 'com.lorentzos.swipecards:library:1.0.9'
 
+    // Implementing Cardview
+    implementation 'com.android.support:cardview-v7:26.1.0'
+
     // Implementing Firebase
     implementation 'com.google.firebase:firebase-core:15.0.2'
     implementation 'com.google.firebase:firebase-database:15.0.0'
