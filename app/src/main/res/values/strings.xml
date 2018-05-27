@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Minglr</string>
+    <string name="sign_out">Sign out</string>
 </resources>

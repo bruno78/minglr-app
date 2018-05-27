@@ -6,6 +6,11 @@
     android:layout_height="match_parent"
     tools:context="com.brunogtavares.minglr.MainActivity">
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/sign_out"
+        android:onClick="LogoutUser"/>
     <com.lorentzos.flingswipe.SwipeFlingAdapterView
         android:id="@+id/fs_frame"
         android:background="#ffeee9e2"
