@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
 
 import com.brunogtavares.minglr.model.Card;
@@ -19,12 +20,13 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.lorentzos.flingswipe.SwipeFlingAdapterView;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private Card cardData[];
+    private Card mCardData[];
 
-    private ArrayAdapter<String> arrayAdapter;
+    private CardAdapter mAdapter;
     private int i;
 
     private FirebaseAuth mAuth;
@@ -32,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private String mUserSex;
     private String mOppositeSex;
 
+    private ListView mListView;
+    private List<Card> mRowItems;
 
 
     @Override
@@ -44,21 +48,21 @@ public class MainActivity extends AppCompatActivity {
         checkUsersSex();
 
 
-        al = new ArrayList<>();
+        mRowItems = new ArrayList<>();
 
-        arrayAdapter = new ArrayAdapter<>(this, R.layout.item, R.id.helloText, al );
+        mAdapter = new CardAdapter(this, R.layout.item, mRowItems );
 
         SwipeFlingAdapterView flingContainer = (SwipeFlingAdapterView) findViewById(R.id.fs_frame);
 
-        flingContainer.setAdapter(arrayAdapter);
+        flingContainer.setAdapter(mAdapter);
         flingContainer.setFlingListener(new SwipeFlingAdapterView.onFlingListener() {
 
             @Override
             public void removeFirstObjectInAdapter() {
                 // this is the simplest way to delete an object from the Adapter (/AdapterView)
                 Log.d("LIST", "removed object!");
-                al.remove(0);
-                arrayAdapter.notifyDataSetChanged();
+                mRowItems.remove(0);
+                mAdapter.notifyDataSetChanged();
             }
 
             @Override
@@ -175,8 +179,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
                 if(dataSnapshot.exists()) {
-                    al.add(dataSnapshot.child("name").getValue().toString());
-                    arrayAdapter.notifyDataSetChanged();
+                    Card card = new Card(dataSnapshot.getKey(), dataSnapshot.child("name").getValue().toString());
+                    mRowItems.add(card);
+                    mAdapter.notifyDataSetChanged();
                 }
             }
 
