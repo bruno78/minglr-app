@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,6 +16,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
@@ -83,8 +85,17 @@ public class SignupActivity extends AppCompatActivity {
                         new OnCompleteListener<AuthResult>() {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
+
+                                // If signup fails
                                 if(!task.isSuccessful()) {
-                                    Toast.makeText(SignupActivity.this, "Sign up error", Toast.LENGTH_SHORT).show();
+                                    // Verifies if user already is in the database.
+                                    if (task.getException() instanceof FirebaseAuthUserCollisionException) {
+                                        Toast.makeText(SignupActivity.this, "User with this email already exist.", Toast.LENGTH_SHORT).show();
+                                    }
+
+                                    Toast.makeText(SignupActivity.this,
+                                            "Sign up error:" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                    Log.i("Response","Failed to create user:"+task.getException().getMessage());
                                 }
                                 else {
                                     String userId = mAuth.getCurrentUser().getUid();

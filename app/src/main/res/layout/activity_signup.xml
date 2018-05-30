@@ -19,12 +19,12 @@
             android:id="@+id/rb_male"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="male"/>
+            android:text="Male"/>
         <RadioButton
             android:id="@+id/rb_female"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="female" />
+            android:text="Female" />
     </RadioGroup>
     
     <EditText
