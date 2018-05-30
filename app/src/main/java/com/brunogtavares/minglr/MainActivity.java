@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -29,10 +30,15 @@ public class MainActivity extends AppCompatActivity {
     private CardAdapter mAdapter;
     private int i;
 
+    private Button mSignoutButton;
+
     private FirebaseAuth mAuth;
 
     private String mUserSex;
     private String mOppositeSex;
+    private String mCurrentUserId;
+
+    private DatabaseReference mUsersDb;
 
     private ListView mListView;
     private List<Card> mRowItems;
@@ -43,13 +49,16 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mUsersDb = FirebaseDatabase.getInstance().getReference().child("Users");
+
+        mSignoutButton = findViewById(R.id.bt_signout);
+
         mAuth = FirebaseAuth.getInstance();
+        mCurrentUserId = mAuth.getCurrentUser().getUid();
 
-        checkUsersSex();
-
+        checkUserSex();
 
         mRowItems = new ArrayList<>();
-
         mAdapter = new CardAdapter(this, R.layout.item, mRowItems );
 
         SwipeFlingAdapterView flingContainer = (SwipeFlingAdapterView) findViewById(R.id.fs_frame);
@@ -67,15 +76,26 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onLeftCardExit(Object dataObject) {
-                //Do something on the left!
-                //You also have access to the original object.
-                //If you want to use it just cast it (String) dataObject
-                Toast.makeText(MainActivity.this, "Left", Toast.LENGTH_SHORT).show();
+
+                Card card = (Card) dataObject;
+                String userId = card.getUserId();
+
+                mUsersDb.child(mOppositeSex).child(userId).child("connections")
+                        .child("nope").child(mCurrentUserId).setValue(true);
+
+                Toast.makeText(MainActivity.this, "Nope", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onRightCardExit(Object dataObject) {
-                Toast.makeText(MainActivity.this, "Right", Toast.LENGTH_SHORT).show();
+
+                Card card = (Card) dataObject;
+                String userId = card.getUserId();
+
+                mUsersDb.child(mOppositeSex).child(userId).child("connections")
+                        .child("yep").child(mCurrentUserId).setValue(true);
+
+                Toast.makeText(MainActivity.this, "Yep", Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -99,9 +119,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Adding a listener to signout button
+        mSignoutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                logoutUser();
+            }
+        });
+
     }
 
-    private void checkUsersSex() {
+    private void checkUserSex() {
 
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
@@ -178,7 +206,11 @@ public class MainActivity extends AppCompatActivity {
         oppositeSexDb.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if(dataSnapshot.exists()) {
+
+                // Check whether the database exists and also check if the user hasn't already swiped the matches left or right
+                if(dataSnapshot.exists() && !dataSnapshot.child("connections").child("nope").hasChild(mCurrentUserId)
+                        && !dataSnapshot.child("connections").child("yep").hasChild(mCurrentUserId)) {
+
                     Card card = new Card(dataSnapshot.getKey(), dataSnapshot.child("name").getValue().toString());
                     mRowItems.add(card);
                     mAdapter.notifyDataSetChanged();
@@ -207,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    public void LogoutUser(View view) {
+    private void logoutUser() {
         mAuth.signOut();
         Intent intent = new Intent(MainActivity.this, ChooseLoginRegistrationActivity.class);
         startActivity(intent);

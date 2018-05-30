@@ -88,14 +88,10 @@ public class SignupActivity extends AppCompatActivity {
 
                                 // If signup fails
                                 if(!task.isSuccessful()) {
-                                    // Verifies if user already is in the database.
-                                    if (task.getException() instanceof FirebaseAuthUserCollisionException) {
-                                        Toast.makeText(SignupActivity.this, "User with this email already exist.", Toast.LENGTH_SHORT).show();
-                                    }
 
                                     Toast.makeText(SignupActivity.this,
-                                            "Sign up error:" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-                                    Log.i("Response","Failed to create user:"+task.getException().getMessage());
+                                            "Sign up error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
+                                   // Log.i("Response","Failed to create user: "+task.getException().getMessage());
                                 }
                                 else {
                                     String userId = mAuth.getCurrentUser().getUid();
