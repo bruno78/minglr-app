@@ -5,7 +5,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
@@ -33,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     private int i;
 
     private Button mSignoutButton;
+    private Button mSettingsButton;
 
     private FirebaseAuth mAuth;
 
@@ -126,6 +126,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 logoutUser();
+            }
+        });
+
+        // Adding a listener to Settings button
+        mSettingsButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                goToSettings();
             }
         });
 
@@ -281,6 +289,12 @@ public class MainActivity extends AppCompatActivity {
         Intent intent = new Intent(MainActivity.this, ChooseLoginRegistrationActivity.class);
         startActivity(intent);
         finish();
+        return;
+    }
+
+    private void goToSettings() {
+        Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+        startActivity(intent);
         return;
     }
 }

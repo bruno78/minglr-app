@@ -12,6 +12,12 @@
         android:layout_height="wrap_content"
         android:text="@string/sign_out" />
 
+    <Button
+        android:id="@+id/bt_settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/settings_bt_label" />
+
     <com.lorentzos.flingswipe.SwipeFlingAdapterView
         android:id="@+id/fs_frame"
         android:background="#ffeee9e2"

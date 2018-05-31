@@ -1,4 +1,9 @@
 <resources>
     <string name="app_name">Minglr</string>
     <string name="sign_out">Sign out</string>
+    <string name="settings_bt_label">Settings</string>
+    <string name="user_name">Name</string>
+    <string name="user_phone">Phone</string>
+    <string name="confirm">Confirm</string>
+    <string name="back">Back</string>
 </resources>
