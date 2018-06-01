@@ -23,6 +23,6 @@ public final class FirebaseContract {
         // This direct child from Users, stores user's info
         public static final String COLUMN_CUSTOMERS = "Customers";
         public static final String COLUMN_PHONE = "phone";
-        public static final String COLUMN_PROFILE_IMAGE = "profileImages";
+        public static final String COLUMN_PROFILE_IMAGE_URL = "profileImageUrl";
     }
 }

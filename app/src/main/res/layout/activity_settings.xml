@@ -13,7 +13,7 @@
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:layout_marginBottom="20dp"
-        tools:src="@mipmap/ic_launcher" />
+        android:src="@mipmap/ic_launcher" />
 
     <EditText
         android:id="@+id/et_set_user_name"

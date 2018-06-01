@@ -54,6 +54,7 @@ public class MainActivity extends AppCompatActivity {
         mUsersDb = FirebaseDatabase.getInstance().getReference().child(FirebaseEntry.TABLE_NAME);
 
         mSignoutButton = findViewById(R.id.bt_signout);
+        mSettingsButton = findViewById(R.id.bt_settings);
 
         mAuth = FirebaseAuth.getInstance();
         mCurrentUserId = mAuth.getCurrentUser().getUid();
@@ -294,6 +295,8 @@ public class MainActivity extends AppCompatActivity {
 
     private void goToSettings() {
         Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+        // Passing the variable user sex to settings
+        intent.putExtra("userSex", mUserSex);
         startActivity(intent);
         return;
     }

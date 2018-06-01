@@ -15,10 +15,9 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.brunogtavares.minglr.FirebaseData.FirebaseContract.FirebaseEntry;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
@@ -44,7 +43,7 @@ public class SettingsActivity extends AppCompatActivity {
     private Button mConfirmButton, mBackButton;
 
     private FirebaseAuth mAuth;
-    private DatabaseReference mCustomerDb;
+    private DatabaseReference mUserDb;
 
     private String mUserId, mName, mPhone, mProfileImageUrl;
 
@@ -61,11 +60,14 @@ public class SettingsActivity extends AppCompatActivity {
         mConfirmButton = (Button) findViewById(R.id.bt_confirm);
         mBackButton = (Button) findViewById(R.id.bt_back);
 
+        // Getting variable from Intent
+        String userSex = getIntent().getExtras().getString("userSex");
+
         mAuth = FirebaseAuth.getInstance();
         mUserId = mAuth.getCurrentUser().getUid();
 
-        mCustomerDb = FirebaseDatabase.getInstance().getReference()
-                .child(FirebaseEntry.TABLE_NAME).child(FirebaseEntry.COLUMN_CUSTOMERS).child(mUserId);
+        mUserDb = FirebaseDatabase.getInstance().getReference()
+                .child(FirebaseEntry.TABLE_NAME).child(userSex).child(mUserId);
 
         // Retrieve user's information to populate the settings text form.
         getUserInfo();
@@ -87,11 +89,20 @@ public class SettingsActivity extends AppCompatActivity {
                 saveUserInformation();
             }
         });
+
+        // Back to the Main activity
+        mBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+                return;
+            }
+        });
     }
 
     private void getUserInfo() {
 
-        mCustomerDb.addListenerForSingleValueEvent(new ValueEventListener() {
+        mUserDb.addListenerForSingleValueEvent(new ValueEventListener() {
 
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -103,9 +114,12 @@ public class SettingsActivity extends AppCompatActivity {
                     if(userInfo.get(FirebaseEntry.COLUMN_NAME) != null) {
                         mNameField.setText(userInfo.get(FirebaseEntry.COLUMN_NAME).toString());
                     }
-
                     if(userInfo.get(FirebaseEntry.COLUMN_PHONE) != null) {
                         mPhoneField.setText(userInfo.get(FirebaseEntry.COLUMN_PHONE).toString());
+                    }
+                    if(userInfo.get(FirebaseEntry.COLUMN_PROFILE_IMAGE_URL) != null) {
+                        mProfileImageUrl = userInfo.get(FirebaseEntry.COLUMN_PROFILE_IMAGE_URL).toString();
+                        Glide.with(getApplication()).load(mProfileImageUrl).into(mProfileImage);
                     }
                 }
             }
@@ -125,13 +139,13 @@ public class SettingsActivity extends AppCompatActivity {
         userInfo.put(FirebaseEntry.COLUMN_NAME, mName);
         userInfo.put(FirebaseEntry.COLUMN_PHONE, mPhone);
 
-        mCustomerDb.updateChildren(userInfo);
+        mUserDb.updateChildren(userInfo);
 
         // Saving image to Firebase storage
         if (mResultUri != null) {
 
             final StorageReference filepath = FirebaseStorage.getInstance().getReference()
-                    .child(FirebaseEntry.COLUMN_PROFILE_IMAGE).child(mUserId);
+                    .child(FirebaseEntry.COLUMN_PROFILE_IMAGE_URL).child(mUserId);
 
             Bitmap bitmap = null;
 
@@ -145,21 +159,6 @@ public class SettingsActivity extends AppCompatActivity {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
             byte[] data = baos.toByteArray();
             UploadTask uploadTask = filepath.putBytes(data);
-
-            // Old way, deprecated version:
-//            uploadTask.addOnFailureListener(new OnFailureListener() {
-//                @Override
-//                public void onFailure(@NonNull Exception e) {
-//                    finish();
-//                }
-//            });
-//
-//            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-//                @Override
-//                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-//                    Uri downloadUrl = taskSnapshot.getMetadata().getDownloadUrl();
-//                }
-//            })
 
             Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                 @Override
@@ -179,8 +178,9 @@ public class SettingsActivity extends AppCompatActivity {
 
                         Uri downloadUrl = task.getResult();
                         Map userInfo = new HashMap();
-                        userInfo.put(FirebaseEntry.COLUMN_PROFILE_IMAGE, downloadUrl);
-                        mCustomerDb.updateChildren(userInfo);
+                        userInfo.put(FirebaseEntry.COLUMN_PROFILE_IMAGE_URL, downloadUrl.toString());
+                        mUserDb.updateChildren(userInfo);
+                        Toast.makeText(SettingsActivity.this, "Message saved successfully!", Toast.LENGTH_SHORT).show();
 
                         finish();
                         return;
