@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.brunogtavares.minglr.model.Card;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -32,8 +33,8 @@ public class CardAdapter extends ArrayAdapter<Card> {
         ImageView profilePicture = (ImageView) convertView.findViewById(R.id.iv_card_image);
 
         name.setText(cardItem.getUserName());
-        // Temporary place holder
-        profilePicture.setImageResource(R.mipmap.ic_launcher);
+        // Adding image
+        Glide.with(getContext()).load(cardItem.getProfileImageUrl()).into(profilePicture);
 
         return convertView;
     }

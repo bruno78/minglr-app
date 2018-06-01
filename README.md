@@ -62,7 +62,7 @@ Replace:
 
 ```
 
-Por 
+By 
 
 ```java
                         Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
@@ -97,3 +97,5 @@ Por
                         });
 
 ```
+
+More info: https://firebase.google.com/docs/storage/android/upload-files#get_a_download_url
