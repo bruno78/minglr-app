@@ -12,10 +12,14 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import com.brunogtavares.minglr.FirebaseData.FirebaseContract.FirebaseEntry;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -126,7 +130,7 @@ public class SettingsActivity extends AppCompatActivity {
         // Saving image to Firebase storage
         if (mResultUri != null) {
 
-            StorageReference filepath = FirebaseStorage.getInstance().getReference()
+            final StorageReference filepath = FirebaseStorage.getInstance().getReference()
                     .child(FirebaseEntry.COLUMN_PROFILE_IMAGE).child(mUserId);
 
             Bitmap bitmap = null;
@@ -141,18 +145,51 @@ public class SettingsActivity extends AppCompatActivity {
             bitmap.compress(Bitmap.CompressFormat.JPEG, 20, baos);
             byte[] data = baos.toByteArray();
             UploadTask uploadTask = filepath.putBytes(data);
-            uploadTask.addOnFailureListener(new OnFailureListener() {
+
+            // Old way, deprecated version:
+//            uploadTask.addOnFailureListener(new OnFailureListener() {
+//                @Override
+//                public void onFailure(@NonNull Exception e) {
+//                    finish();
+//                }
+//            });
+//
+//            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+//                @Override
+//                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+//                    Uri downloadUrl = taskSnapshot.getMetadata().getDownloadUrl();
+//                }
+//            })
+
+            Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
                 @Override
-                public void onFailure(@NonNull Exception e) {
-                    finish();
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                    if (!task.isSuccessful()) {
+                        throw task.getException();
+                    }
+
+                    // Continue with the task to get the download URL.
+                    return filepath.getDownloadUrl();
+                }
+
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if(task.isSuccessful()) {
+
+                        Uri downloadUrl = task.getResult();
+                        Map userInfo = new HashMap();
+                        userInfo.put(FirebaseEntry.COLUMN_PROFILE_IMAGE, downloadUrl);
+                        mCustomerDb.updateChildren(userInfo);
+
+                        finish();
+                        return;
+                    }
+                    else {
+                        Toast.makeText(SettingsActivity.this, "Unable to download file!", Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                }
-            })
         }
         else {
             finish();
