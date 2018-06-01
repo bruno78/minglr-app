@@ -257,10 +257,17 @@ public class MainActivity extends AppCompatActivity {
                         && !dataSnapshot.child(FirebaseEntry.COLUMN_CONNECTIONS).child(FirebaseEntry.COLUMN_NOPE).hasChild(mCurrentUserId)
                         && !dataSnapshot.child(FirebaseEntry.COLUMN_CONNECTIONS).child(FirebaseEntry.COLUMN_YEP).hasChild(mCurrentUserId)) {
 
+                    String profileImageUrl = "default";
+
+                    // If user has assigned an image on registration, assign it to profileImageUrl
+                    if(!dataSnapshot.child(FirebaseEntry.COLUMN_PROFILE_IMAGE_URL).getValue().equals("default")) {
+                        profileImageUrl = dataSnapshot.child(FirebaseEntry.COLUMN_PROFILE_IMAGE_URL).getValue().toString();
+                    }
+
                     Card card = new Card(dataSnapshot.getKey(),
                             dataSnapshot.child(FirebaseEntry.COLUMN_NAME).getValue().toString(),
-                            dataSnapshot.child(FirebaseEntry.COLUMN_PROFILE_IMAGE_URL).getValue().toString()
-                            );
+                            profileImageUrl);
+
                     mRowItems.add(card);
                     mAdapter.notifyDataSetChanged();
                 }

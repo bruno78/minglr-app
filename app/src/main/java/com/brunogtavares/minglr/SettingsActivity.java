@@ -119,7 +119,17 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                     if(userInfo.get(FirebaseEntry.COLUMN_PROFILE_IMAGE_URL) != null) {
                         mProfileImageUrl = userInfo.get(FirebaseEntry.COLUMN_PROFILE_IMAGE_URL).toString();
-                        Glide.with(getApplication()).load(mProfileImageUrl).into(mProfileImage);
+
+                        // If user has assigned an image on registration, assign it to profileImageUrl
+                        Glide.clear(mProfileImage);
+                        if(!mProfileImageUrl.equals("default")) {
+                            Glide.with(getApplication()).load(mProfileImageUrl).into(mProfileImage);
+                        }
+                        else {
+                            Glide.with(getApplication()).load(R.mipmap.ic_launcher).into(mProfileImage);
+                        }
+
+
                     }
                 }
             }

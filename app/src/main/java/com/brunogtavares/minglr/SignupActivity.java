@@ -12,6 +12,7 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.brunogtavares.minglr.FirebaseData.FirebaseContract.FirebaseEntry;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
@@ -20,6 +21,9 @@ import com.google.firebase.auth.FirebaseAuthUserCollisionException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class SignupActivity extends AppCompatActivity {
 
@@ -94,11 +98,18 @@ public class SignupActivity extends AppCompatActivity {
                                    // Log.i("Response","Failed to create user: "+task.getException().getMessage());
                                 }
                                 else {
+
+
                                     String userId = mAuth.getCurrentUser().getUid();
                                     DatabaseReference currentUserDb = FirebaseDatabase.getInstance()
-                                            .getReference().child("Users").child(radioButton.getText().toString())
-                                            .child(userId).child("name");
-                                    currentUserDb.setValue(name);
+                                            .getReference().child(FirebaseEntry.TABLE_NAME).child(radioButton.getText().toString())
+                                            .child(userId);
+
+                                    Map userInfo = new HashMap();
+                                    userInfo.put(FirebaseEntry.COLUMN_NAME, name);
+                                    userInfo.put(FirebaseEntry.COLUMN_PROFILE_IMAGE_URL, "default");
+
+                                    currentUserDb.updateChildren(userInfo);
                                 }
                             }
                         });
