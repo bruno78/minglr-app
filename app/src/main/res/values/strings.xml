@@ -6,4 +6,5 @@
     <string name="user_phone">Phone</string>
     <string name="confirm">Confirm</string>
     <string name="back">Back</string>
+    <string name="matches_bt_label">matches</string>
 </resources>

@@ -32,14 +32,11 @@ public class MainActivity extends AppCompatActivity {
     private CardAdapter mAdapter;
     private int i;
 
-    private Button mSignoutButton;
-    private Button mSettingsButton;
+    private Button mSignoutButton, mMatchesButton, mSettingsButton;
 
     private FirebaseAuth mAuth;
 
-    private String mUserSex;
-    private String mOppositeSex;
-    private String mCurrentUserId;
+    private String mUserSex, mOppositeSex, mCurrentUserId;
 
     private DatabaseReference mUsersDb;
 
@@ -56,6 +53,7 @@ public class MainActivity extends AppCompatActivity {
 
         mSignoutButton = findViewById(R.id.bt_signout);
         mSettingsButton = findViewById(R.id.bt_settings);
+        mMatchesButton = findViewById(R.id.bt_matches);
 
         mAuth = FirebaseAuth.getInstance();
         mCurrentUserId = mAuth.getCurrentUser().getUid();
@@ -139,6 +137,14 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        // Adding a listener to Matches button
+        mMatchesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                goToMatches();
+            }
+        });
+
     }
 
     private void isConnectionMatch(String userId) {
@@ -179,14 +185,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
-                    if (dataSnapshot.child(FirebaseEntry.COLUMN_SEX) != null) {
+                    if (dataSnapshot.child(FirebaseEntry.COLUMN_SEX).getValue() != null) {
                         mUserSex = dataSnapshot.child(FirebaseEntry.COLUMN_SEX).getValue().toString();
 
                         // Temporary preference assignment
-                        if(mUserSex == FirebaseEntry.COLUMN_SEX_MALE) {
+                        if(mUserSex.equals(FirebaseEntry.COLUMN_SEX_MALE)) {
                             mOppositeSex = FirebaseEntry.COLUMN_SEX_FEMALE;
                         }
-                        if(mUserSex == FirebaseEntry.COLUMN_SEX_FEMALE) {
+                        if(mUserSex.equals(FirebaseEntry.COLUMN_SEX_FEMALE)) {
                             mOppositeSex = FirebaseEntry.COLUMN_SEX_MALE;
                         }
                         getOppositeSex();
@@ -261,6 +267,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void goToSettings() {
         Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+        startActivity(intent);
+        return;
+    }
+
+    private void goToMatches() {
+        Intent intent = new Intent(MainActivity.this, MatchesActivity.class);
         startActivity(intent);
         return;
     }

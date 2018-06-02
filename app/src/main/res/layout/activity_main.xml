@@ -18,6 +18,13 @@
             android:text="@string/sign_out" />
 
         <Button
+            android:id="@+id/bt_matches"
+            android:layout_weight="1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/matches_bt_label" />
+
+        <Button
             android:id="@+id/bt_settings"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
