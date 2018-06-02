@@ -102,11 +102,11 @@ public class SignupActivity extends AppCompatActivity {
 
                                     String userId = mAuth.getCurrentUser().getUid();
                                     DatabaseReference currentUserDb = FirebaseDatabase.getInstance()
-                                            .getReference().child(FirebaseEntry.TABLE_NAME).child(radioButton.getText().toString())
-                                            .child(userId);
+                                            .getReference().child(FirebaseEntry.TABLE_NAME).child(userId);
 
                                     Map userInfo = new HashMap();
                                     userInfo.put(FirebaseEntry.COLUMN_NAME, name);
+                                    userInfo.put(FirebaseEntry.COLUMN_SEX, radioButton.getText().toString());
                                     userInfo.put(FirebaseEntry.COLUMN_PROFILE_IMAGE_URL, "default");
 
                                     currentUserDb.updateChildren(userInfo);
