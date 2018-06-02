@@ -45,7 +45,7 @@ public class SettingsActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDb;
 
-    private String mUserId, mName, mPhone, mProfileImageUrl;
+    private String mUserId, mName, mPhone, mProfileImageUrl, mUserSex;
 
     private Uri mResultUri;
 
@@ -60,14 +60,11 @@ public class SettingsActivity extends AppCompatActivity {
         mConfirmButton = (Button) findViewById(R.id.bt_confirm);
         mBackButton = (Button) findViewById(R.id.bt_back);
 
-        // Getting variable from Intent
-        String userSex = getIntent().getExtras().getString("userSex");
-
         mAuth = FirebaseAuth.getInstance();
         mUserId = mAuth.getCurrentUser().getUid();
 
         mUserDb = FirebaseDatabase.getInstance().getReference()
-                .child(FirebaseEntry.TABLE_NAME).child(userSex).child(mUserId);
+                .child(FirebaseEntry.TABLE_NAME).child(mUserId);
 
         // Retrieve user's information to populate the settings text form.
         getUserInfo();
@@ -113,6 +110,9 @@ public class SettingsActivity extends AppCompatActivity {
 
                     if(userInfo.get(FirebaseEntry.COLUMN_NAME) != null) {
                         mNameField.setText(userInfo.get(FirebaseEntry.COLUMN_NAME).toString());
+                    }
+                    if(userInfo.get(FirebaseEntry.COLUMN_SEX) != null) {
+                        mUserSex = userInfo.get(FirebaseEntry.COLUMN_SEX).toString();
                     }
                     if(userInfo.get(FirebaseEntry.COLUMN_PHONE) != null) {
                         mPhoneField.setText(userInfo.get(FirebaseEntry.COLUMN_PHONE).toString());

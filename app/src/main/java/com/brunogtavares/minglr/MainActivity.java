@@ -1,6 +1,7 @@
 package com.brunogtavares.minglr;
 
 import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -174,57 +175,43 @@ public class MainActivity extends AppCompatActivity {
 
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference userDb = mUsersDb.child(user.getUid());
-        userDb.addChildEventListener(new ChildEventListener() {
+        userDb.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
-            public void onChildAdded(DataSnapshot dataSnapshot, String s) {
-                if(dataSnapshot.getKey().equals(user.getUid())) {
-                    if(dataSnapshot.exists()) {
-                        if (dataSnapshot.child(FirebaseEntry.COLUMN_SEX != null)) {
-                            mUserSex = dataSnapshot.child(FirebaseEntry.COLUMN_SEX).getValue().toString();
-                            // TODO: Add temporary swtich statement to assign the opposit sex...
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    if (dataSnapshot.child(FirebaseEntry.COLUMN_SEX) != null) {
+                        mUserSex = dataSnapshot.child(FirebaseEntry.COLUMN_SEX).getValue().toString();
+
+                        // Temporary preference assignment
+                        if(mUserSex == FirebaseEntry.COLUMN_SEX_MALE) {
+                            mOppositeSex = FirebaseEntry.COLUMN_SEX_FEMALE;
                         }
+                        if(mUserSex == FirebaseEntry.COLUMN_SEX_FEMALE) {
+                            mOppositeSex = FirebaseEntry.COLUMN_SEX_MALE;
+                        }
+                        getOppositeSex();
                     }
-                    mUserSex = FirebaseEntry.COLUMN_SEX_MALE;
-                    mOppositeSex = FirebaseEntry.COLUMN_SEX_FEMALE;
-                    getOppositeSex();
                 }
 
             }
 
             @Override
-            public void onChildChanged(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onChildRemoved(DataSnapshot dataSnapshot) {
-
-            }
-
-            @Override
-            public void onChildMoved(DataSnapshot dataSnapshot, String s) {
-
-            }
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
+            public void onCancelled(@NonNull DatabaseError databaseError) {
 
             }
         });
     }
 
     private void getOppositeSex() {
-        DatabaseReference oppositeSexDb = FirebaseDatabase.getInstance().getReference()
-                .child(FirebaseEntry.TABLE_NAME).child(mOppositeSex);
-
-        oppositeSexDb.addChildEventListener(new ChildEventListener() {
+        mUsersDb.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
                 // Check whether the database exists and also check if the user hasn't already swiped the matches left or right
                 if(dataSnapshot.exists()
                         && !dataSnapshot.child(FirebaseEntry.COLUMN_CONNECTIONS).child(FirebaseEntry.COLUMN_NOPE).hasChild(mCurrentUserId)
-                        && !dataSnapshot.child(FirebaseEntry.COLUMN_CONNECTIONS).child(FirebaseEntry.COLUMN_YEP).hasChild(mCurrentUserId)) {
+                        && !dataSnapshot.child(FirebaseEntry.COLUMN_CONNECTIONS).child(FirebaseEntry.COLUMN_YEP).hasChild(mCurrentUserId)
+                        && dataSnapshot.child(FirebaseEntry.COLUMN_SEX).getValue().toString().equals(mOppositeSex)) {
 
                     String profileImageUrl = "default";
 
@@ -274,8 +261,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void goToSettings() {
         Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
-        // Passing the variable user sex to settings
-        intent.putExtra("userSex", mUserSex);
         startActivity(intent);
         return;
     }
