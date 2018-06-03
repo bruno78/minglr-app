@@ -1,4 +1,4 @@
-package com.brunogtavares.minglr;
+package com.brunogtavares.minglr.adapters;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -6,9 +6,12 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.brunogtavares.minglr.R;
 import com.brunogtavares.minglr.model.Match;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -18,12 +21,12 @@ import java.util.List;
 
 public class MatchAdpater extends RecyclerView.Adapter<MatchAdpater.MatchViewHolder> {
 
-    private List<Match> mMatchestList;
+    private List<Match> mMatchesList;
     private Context mContext;
 
-    public MatchAdpater(List<Match> mMatchestList, Context context) {
+    public MatchAdpater(List<Match> mMatchesList, Context context) {
         this.mContext = context;
-        this.mMatchestList = mMatchestList;
+        this.mMatchesList = mMatchesList;
     }
 
     @NonNull
@@ -42,22 +45,33 @@ public class MatchAdpater extends RecyclerView.Adapter<MatchAdpater.MatchViewHol
 
     @Override
     public void onBindViewHolder(@NonNull MatchViewHolder holder, int position) {
-        holder.mMatchIdTextView.setText(mMatchestList.get(position).getUserId());
+        Match match = mMatchesList.get(position);
+        holder.mMatchIdTextView.setText(match.getUserId());
+        holder.mMatchUserNameTextView.setText(match.getName());
+
+        if (!match.getProfileImageUrl().equals("default")) {
+            Glide.with(mContext).load(match.getProfileImageUrl()).into(holder.mMatchUserPic);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mMatchestList.size();
+        return mMatchesList.size();
     }
 
 
     public class MatchViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public TextView mMatchIdTextView;
+        public TextView mMatchIdTextView, mMatchUserNameTextView;
+        public ImageView mMatchUserPic;
 
         public MatchViewHolder(View itemView) {
             super(itemView);
+
             mMatchIdTextView = (TextView) itemView.findViewById(R.id.tv_match_user_id);
+            mMatchUserNameTextView = (TextView) itemView.findViewById(R.id.tv_match_user_name);
+            mMatchUserPic = (ImageView) itemView.findViewById(R.id.iv_match_user_pic);
+
             itemView.setOnClickListener(this);
 
         }

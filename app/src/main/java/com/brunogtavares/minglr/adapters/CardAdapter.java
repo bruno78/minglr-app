@@ -1,4 +1,4 @@
-package com.brunogtavares.minglr;
+package com.brunogtavares.minglr.adapters;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -8,6 +8,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.brunogtavares.minglr.R;
 import com.brunogtavares.minglr.model.Card;
 import com.bumptech.glide.Glide;
 

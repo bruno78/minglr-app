@@ -4,16 +4,32 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:padding="16dp">
+
     <ImageView
         android:id="@+id/iv_match_user_pic"
-        android:layout_width="75dp"
-        android:layout_height="75dp"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
         android:src="@mipmap/ic_launcher"/>
-    <TextView
-        android:id="@+id/tv_match_user_id"
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="vertical"
         android:layout_gravity="center"
-        tools:text="John Smith"/>
+        android:paddingLeft="16dp">
+
+        <TextView
+            android:id="@+id/tv_match_user_id"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="5463"/>
+
+        <TextView
+            android:id="@+id/tv_match_user_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            tools:text="John Smith"/>
+
+    </LinearLayout>
 
 </LinearLayout>

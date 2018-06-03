@@ -11,6 +11,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.brunogtavares.minglr.FirebaseData.FirebaseContract.FirebaseEntry;
+import com.brunogtavares.minglr.adapters.CardAdapter;
 import com.brunogtavares.minglr.model.Card;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
