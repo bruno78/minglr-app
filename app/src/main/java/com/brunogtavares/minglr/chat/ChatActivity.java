@@ -1,6 +1,7 @@
 package com.brunogtavares.minglr.chat;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,6 +13,7 @@ import android.widget.EditText;
 import com.brunogtavares.minglr.FirebaseData.FirebaseContract.FirebaseEntry;
 import com.brunogtavares.minglr.R;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -25,6 +27,8 @@ import java.util.Map;
 
 
 public class ChatActivity extends AppCompatActivity {
+
+    public static final String MATCH_KEY = "matchId" ;
 
     private List<Chat> mChatList;
 
@@ -45,7 +49,7 @@ public class ChatActivity extends AppCompatActivity {
         setContentView(R.layout.activity_chat);
 
         // Getting info from MatchAdapter
-        mMatchId = getIntent().getExtras().getString("matchId");
+        mMatchId = getIntent().getExtras().getString(MATCH_KEY);
 
         mCurrentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
@@ -64,7 +68,7 @@ public class ChatActivity extends AppCompatActivity {
         mRecyclerView = findViewById(R.id.rv_chat_recyclerview);
         // this will allow the scrolling run smoothly
         mRecyclerView.setNestedScrollingEnabled(false);
-        mRecyclerView.setHasFixedSize(true);
+        mRecyclerView.setHasFixedSize(false);
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(ChatActivity.this);
         mRecyclerView.setLayoutManager(linearLayoutManager);
 
@@ -86,6 +90,7 @@ public class ChatActivity extends AppCompatActivity {
                 if (dataSnapshot.exists()) {
                     mChatId = dataSnapshot.getValue().toString();
                     mChatDb = mChatDb.child(mChatId);
+                    getChatMessages();
                 }
             }
 
@@ -95,6 +100,52 @@ public class ChatActivity extends AppCompatActivity {
             }
         });
     }
+
+    private void getChatMessages() {
+        mChatDb.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                if (dataSnapshot.exists()) {
+                    String message = null;
+                    String createByUser = null;
+
+                    if (dataSnapshot.child(FirebaseEntry.COLUMN_CHAT_TEXT).getValue() != null) {
+                        message = dataSnapshot.child(FirebaseEntry.COLUMN_CHAT_TEXT).getValue().toString();
+                    }
+                    if (dataSnapshot.child(FirebaseEntry.COLUMN_CREATED_BY_USER).getValue() != null) {
+                        createByUser = dataSnapshot.child(FirebaseEntry.COLUMN_CREATED_BY_USER).getValue().toString();
+                    }
+                    if (message != null && createByUser != null) {
+                        Boolean isCurrentUser = createByUser.equals(mCurrentUserId);
+                        Chat newMessage = new Chat(message, isCurrentUser);
+                        mChatList.add(newMessage);
+                        mChatAdapter.notifyDataSetChanged();
+                    }
+                }
+            }
+
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
     private void sendMessage() {
 
         String messageText = mChatBox.getText().toString();
@@ -103,8 +154,8 @@ public class ChatActivity extends AppCompatActivity {
             DatabaseReference newMessageDb = mChatDb.push();
 
             Map newMessage = new HashMap();
-            newMessage.put("createdByUser", mCurrentUserId);
-            newMessage.put("text", messageText);
+            newMessage.put(FirebaseEntry.COLUMN_CREATED_BY_USER, mCurrentUserId);
+            newMessage.put(FirebaseEntry.COLUMN_CHAT_TEXT, messageText);
             newMessageDb.setValue(newMessage);
         }
 

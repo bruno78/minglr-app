@@ -28,6 +28,8 @@ public final class FirebaseContract {
 
         public static final String TABLE_CHAT = "Chat";
         public static final String COLUMN_CHAT_ID = "ChatId";
+        public static final String COLUMN_CHAT_TEXT = "text";
+        public static final String COLUMN_CREATED_BY_USER = "createdByUser";
 
     }
 }

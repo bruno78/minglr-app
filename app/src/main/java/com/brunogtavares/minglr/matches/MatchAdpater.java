@@ -11,6 +11,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.brunogtavares.minglr.MainActivity;
 import com.brunogtavares.minglr.R;
 import com.brunogtavares.minglr.chat.ChatActivity;
 import com.bumptech.glide.Glide;
@@ -82,7 +83,7 @@ public class MatchAdpater extends RecyclerView.Adapter<MatchAdpater.MatchViewHol
         public void onClick(View view) {
             Intent intent = new Intent(view.getContext(), ChatActivity.class);
             Bundle bundle = new Bundle();
-            bundle.putString("matchId", mMatchIdTextView.getText().toString());
+            bundle.putString(ChatActivity.MATCH_KEY, mMatchIdTextView.getText().toString());
             intent.putExtras(bundle);
             view.getContext().startActivity(intent);
 
