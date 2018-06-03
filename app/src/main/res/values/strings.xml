@@ -7,4 +7,6 @@
     <string name="confirm">Confirm</string>
     <string name="back">Back</string>
     <string name="matches_bt_label">matches</string>
+    <string name="send_label">Send</string>
+    <string name="message">message</string>
 </resources>

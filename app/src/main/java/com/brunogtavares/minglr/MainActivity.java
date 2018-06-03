@@ -215,6 +215,8 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onChildAdded(DataSnapshot dataSnapshot, String s) {
 
+                // if(dataSnapshot.child(FirebaseEntry.COLUMN_SEX).getValue() != null)
+
                 // Check whether the database exists and also check if the user hasn't already swiped the matches left or right
                 if(dataSnapshot.exists()
                         && !dataSnapshot.child(FirebaseEntry.COLUMN_CONNECTIONS).child(FirebaseEntry.COLUMN_NOPE).hasChild(mCurrentUserId)

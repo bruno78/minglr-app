@@ -1,6 +1,8 @@
 package com.brunogtavares.minglr.matches;
 
 import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -10,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.brunogtavares.minglr.R;
+import com.brunogtavares.minglr.chat.ChatActivity;
 import com.bumptech.glide.Glide;
 
 import java.util.List;
@@ -76,7 +79,12 @@ public class MatchAdpater extends RecyclerView.Adapter<MatchAdpater.MatchViewHol
         }
 
         @Override
-        public void onClick(View v) {
+        public void onClick(View view) {
+            Intent intent = new Intent(view.getContext(), ChatActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putString("matchId", mMatchIdTextView.getText().toString());
+            intent.putExtras(bundle);
+            view.getContext().startActivity(intent);
 
         }
     }
