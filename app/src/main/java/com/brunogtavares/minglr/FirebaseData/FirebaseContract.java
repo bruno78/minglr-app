@@ -26,5 +26,8 @@ public final class FirebaseContract {
         public static final String COLUMN_YEP = "yep";
         public static final String COLUMN_MATCHES = "matches";
 
+        public static final String TABLE_CHAT = "Chat";
+        public static final String COLUMN_CHAT_ID = "ChatId";
+
     }
 }

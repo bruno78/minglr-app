@@ -162,13 +162,17 @@ public class MainActivity extends AppCompatActivity {
 
                     Toast.makeText(MainActivity.this, "A match has been made!", Toast.LENGTH_LONG).show();
 
+                    // This won't create a child inside chat but it will give the key for that chat.
+                    String key = FirebaseDatabase.getInstance().getReference().child(FirebaseEntry.TABLE_CHAT).push().getKey();
+
                     mUsersDb.child(dataSnapshot.getKey())
                             .child(FirebaseEntry.COLUMN_CONNECTIONS).child(FirebaseEntry.COLUMN_MATCHES)
-                            .child(mCurrentUserId).setValue(true);
+                            .child(mCurrentUserId).child(FirebaseEntry.COLUMN_CHAT_ID).setValue(key);
 
                     mUsersDb.child(mCurrentUserId)
                             .child(FirebaseEntry.COLUMN_CONNECTIONS).child(FirebaseEntry.COLUMN_MATCHES)
-                            .child(dataSnapshot.getKey()).setValue(true);
+                            .child(dataSnapshot.getKey()).child(FirebaseEntry.COLUMN_CHAT_ID).setValue(key);
+
                 }
             }
 
