@@ -44,6 +44,9 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
+        // Getting info from MatchAdapter
+        mMatchId = getIntent().getExtras().getString("matchId");
+
         mCurrentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         mUserDb = FirebaseDatabase.getInstance().getReference().child(FirebaseEntry.TABLE_NAME)
@@ -55,9 +58,6 @@ public class ChatActivity extends AppCompatActivity {
         mSendButton = (Button) findViewById(R.id.bt_chat_send_button);
 
         mChatList = new ArrayList<>();
-
-        // Getting info from MatchAdapter
-        mMatchId = getIntent().getExtras().getString("matchId");
 
         getChatId();
 
