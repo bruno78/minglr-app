@@ -1,4 +1,4 @@
-package com.brunogtavares.minglr.model;
+package com.brunogtavares.minglr.matches;
 
 /**
  * Created by brunogtavares on 6/2/18.

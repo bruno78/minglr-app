@@ -22,7 +22,8 @@
         <activity android:name=".SignupActivity" />
         <activity android:name=".LoginActivity" />
         <activity android:name=".SettingsActivity" />
-        <activity android:name=".MatchesActivity"></activity>
+        <activity android:name=".matches.MatchesActivity" />
+        <activity android:name=".chat.ChatActivity"></activity>
     </application>
 
 </manifest>

@@ -1,4 +1,4 @@
-package com.brunogtavares.minglr.adapters;
+package com.brunogtavares.minglr.matches;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
@@ -10,7 +10,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.brunogtavares.minglr.R;
-import com.brunogtavares.minglr.model.Match;
 import com.bumptech.glide.Glide;
 
 import java.util.List;

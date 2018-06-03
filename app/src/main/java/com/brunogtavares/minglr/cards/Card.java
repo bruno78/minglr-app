@@ -1,4 +1,4 @@
-package com.brunogtavares.minglr.model;
+package com.brunogtavares.minglr.cards;
 
 public class Card {
     private String userId;
