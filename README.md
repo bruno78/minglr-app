@@ -1,15 +1,36 @@
-#Minglr - Dating App
+# Minglr - Dating App
+
+It's a clone of Tinder dating App where users can see cards of other users and swipe left for "nope" or right for "yep".
+If two users swipe "yep" for each other, a match is made and they can chat to each other. 
+
+## Pre-requisites
+
+* Android SDK v27
+* Android min SDK v15
 
 ## Tools used
 
-* Firebase
-    * auth
-    * database
-    * storage
-* Lorentzo's Swipe Cards Library
-* Glide
-* Cardview
+* Firebase core v16.0.0
+    * auth v16.0.1
+    * database v16.0.1
+    * storage v16.0.1
+* Lorentzo's Swipe Cards Library v1.0.9
+* Glide v3.7.0
+* Cardview 27.1.1
 
+## Getting Started 
+
+This app uses the Gradle build system. To build this project, use the "gradlew build" command or use "Import Project"
+Android Studio
+
+## To do:
+
+- [ ] Polish UI
+- [ ] Add user profiles
+- [ ] Add favorites feature
+- [ ] Add user preferences
+- [ ] Bring nopes back 
+- [ ] Improve chat
 
 ## Problems faced 
 
