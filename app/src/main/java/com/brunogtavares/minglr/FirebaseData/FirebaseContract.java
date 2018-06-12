@@ -31,5 +31,6 @@ public final class FirebaseContract {
         public static final String COLUMN_CHAT_TEXT = "text";
         public static final String COLUMN_CREATED_BY_USER = "createdByUser";
 
+        public static final String COLUMN_ABOUT_ME = "aboutMe" ;
     }
 }

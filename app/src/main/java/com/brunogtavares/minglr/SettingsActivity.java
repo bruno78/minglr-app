@@ -13,10 +13,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.brunogtavares.minglr.FirebaseData.FirebaseContract.FirebaseEntry;
@@ -42,18 +45,18 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener, AdapterView.OnItemSelectedListener {
 
     private final int REQUEST_IMAGE_CODE = 1;
 
     private ImageView mProfileImage;
-    private EditText mNameField, mBirthdayField;
+    private EditText mNameField, mBirthdayField, mAboutMeField;
     private Button mConfirmButton, mBackButton;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDb;
 
-    private String mUserId, mName, mBirthday, mProfileImageUrl, mSex, mDescription;
+    private String mUserId, mName, mBirthday, mProfileImageUrl, mSex, mAboutMe;
 
     private Calendar mUserCalendar;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
@@ -68,6 +71,8 @@ public class SettingsActivity extends AppCompatActivity {
         mProfileImage = (ImageView) findViewById(R.id.iv_profile_image);
         mNameField = (EditText) findViewById(R.id.et_set_user_name);
         mBirthdayField = (EditText) findViewById(R.id.et_set_user_birthday);
+        mAboutMeField = (EditText) findViewById(R.id.et_set_about_me);
+
         mConfirmButton = (Button) findViewById(R.id.bt_confirm);
         mBackButton = (Button) findViewById(R.id.bt_back);
 
@@ -89,6 +94,15 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivityForResult(intent, REQUEST_IMAGE_CODE);
             }
         });
+
+        // Getting the spinner menu
+        Spinner dropdown = findViewById(R.id.sp_sex);
+        String[] items = new String[]{FirebaseEntry.COLUMN_SEX_MALE, FirebaseEntry.COLUMN_SEX_FEMALE};
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this,
+                R.layout.support_simple_spinner_dropdown_item, items);
+        dropdown.setAdapter(spinnerAdapter);
+        dropdown.setOnItemSelectedListener(this);
+
 
         // Getting the Calendar pop up to get user's birthday
         mBirthdayField.setOnClickListener(new View.OnClickListener() {
@@ -136,12 +150,6 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
-    private void updateLabel() {
-        String myFormat = "MM/dd/yy";
-        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-        mBirthdayField.setText(sdf.format(mUserCalendar.getTime()));
-    }
-
     private void getUserInfo() {
 
         mUserDb.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -161,6 +169,9 @@ public class SettingsActivity extends AppCompatActivity {
                     }
                     if(userInfo.get(FirebaseEntry.COLUMN_BIRTHDAY) != null) {
                         mBirthdayField.setText(userInfo.get(FirebaseEntry.COLUMN_BIRTHDAY).toString());
+                    }
+                    if(userInfo.get(FirebaseEntry.COLUMN_ABOUT_ME) != null) {
+                        mAboutMeField.setText(userInfo.get(FirebaseEntry.COLUMN_ABOUT_ME).toString());
                     }
                     if(userInfo.get(FirebaseEntry.COLUMN_PROFILE_IMAGE_URL) != null) {
                         mProfileImageUrl = userInfo.get(FirebaseEntry.COLUMN_PROFILE_IMAGE_URL).toString();
@@ -189,10 +200,15 @@ public class SettingsActivity extends AppCompatActivity {
     private void saveUserInformation() {
         mName = mNameField.getText().toString();
         mBirthday = mBirthdayField.getText().toString();
+        mAboutMe = mAboutMeField.getText().toString();
+        String sex = mSex;
+
 
         Map userInfo = new HashMap();
         userInfo.put(FirebaseEntry.COLUMN_NAME, mName);
         userInfo.put(FirebaseEntry.COLUMN_BIRTHDAY, mBirthday);
+        userInfo.put(FirebaseEntry.COLUMN_SEX, sex);
+        userInfo.put(FirebaseEntry.COLUMN_ABOUT_ME, mAboutMe);
 
         mUserDb.updateChildren(userInfo);
 
@@ -262,5 +278,29 @@ public class SettingsActivity extends AppCompatActivity {
             mResultUri = imageUri;
             mProfileImage.setImageURI(mResultUri);
         }
+    }
+
+    // Handles selected item from spinner menu
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+
+        switch(position) {
+            case 0:
+                mSex = FirebaseEntry.COLUMN_SEX_MALE;
+                break;
+            case 1:
+                mSex = FirebaseEntry.COLUMN_SEX_FEMALE;
+                break;
+        }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
     }
 }

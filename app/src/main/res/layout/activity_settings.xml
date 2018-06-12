@@ -39,6 +39,13 @@
             android:focusable="false"
             android:hint="@string/birthday" />
 
+        <Spinner
+            android:id="@+id/sp_sex"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dropdown" />
+
         <EditText
             android:id="@+id/et_set_about_me"
             android:layout_width="match_parent"
