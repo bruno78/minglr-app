@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -7,42 +7,68 @@
     android:orientation="vertical"
     android:padding="20dp"
     tools:context="com.brunogtavares.minglr.SettingsActivity">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:layout_above="@id/ll_confirm_back_buttons">
 
-    <ImageView
-        android:id="@+id/iv_profile_image"
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginBottom="20dp"
-        android:src="@mipmap/ic_launcher" />
+        <ImageView
+            android:id="@+id/iv_profile_image"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_marginBottom="20dp"
+            android:src="@mipmap/ic_launcher" />
 
-    <EditText
-        android:id="@+id/et_set_user_name"
+        <EditText
+            android:id="@+id/et_set_user_name"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:background="@null"
+            android:hint="@string/user_name" />
+
+        <EditText
+            android:id="@+id/et_set_user_birthday"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp"
+            android:background="@null"
+            android:clickable="true"
+            android:inputType="date"
+            android:focusable="false"
+            android:hint="@string/birthday" />
+
+        <EditText
+            android:id="@+id/et_set_about_me"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginBottom="20dp"
+            android:gravity="start"
+            android:background="@null"
+            android:hint="@string/user_about"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_confirm_back_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:background="@null"
-        android:hint="@string/user_name" />
+        android:layout_alignParentBottom="true">
 
-    <EditText
-        android:id="@+id/et_set_phone"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="20dp"
-        android:background="@null"
-        android:hint="@string/user_phone"
-        android:inputType="phone" />
+        <Button
+            android:id="@+id/bt_confirm"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/confirm" />
 
-    <Button
-        android:id="@+id/bt_confirm"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/confirm" />
+        <Button
+            android:id="@+id/bt_back"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:text="@string/back" />
 
-    <Button
-        android:id="@+id/bt_back"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="@string/back" />
-
-
-</LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

@@ -9,4 +9,8 @@
     <string name="matches_bt_label">matches</string>
     <string name="send_label">Send</string>
     <string name="message">message</string>
+    <string name="matches_activity_title">Matches</string>
+    <string name="settings_activity_title">Settings</string>
+    <string name="user_about">About me</string>
+    <string name="birthday">Birthday</string>
 </resources>

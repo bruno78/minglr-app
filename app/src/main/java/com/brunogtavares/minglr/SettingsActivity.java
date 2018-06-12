@@ -1,15 +1,20 @@
 package com.brunogtavares.minglr;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -31,7 +36,10 @@ import com.google.firebase.storage.UploadTask;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class SettingsActivity extends AppCompatActivity {
@@ -39,13 +47,16 @@ public class SettingsActivity extends AppCompatActivity {
     private final int REQUEST_IMAGE_CODE = 1;
 
     private ImageView mProfileImage;
-    private EditText mNameField, mPhoneField;
+    private EditText mNameField, mBirthdayField;
     private Button mConfirmButton, mBackButton;
 
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDb;
 
-    private String mUserId, mName, mPhone, mProfileImageUrl, mUserSex;
+    private String mUserId, mName, mBirthday, mProfileImageUrl, mSex, mDescription;
+
+    private Calendar mUserCalendar;
+    private DatePickerDialog.OnDateSetListener mDateSetListener;
 
     private Uri mResultUri;
 
@@ -56,7 +67,7 @@ public class SettingsActivity extends AppCompatActivity {
 
         mProfileImage = (ImageView) findViewById(R.id.iv_profile_image);
         mNameField = (EditText) findViewById(R.id.et_set_user_name);
-        mPhoneField = (EditText) findViewById(R.id.et_set_phone);
+        mBirthdayField = (EditText) findViewById(R.id.et_set_user_birthday);
         mConfirmButton = (Button) findViewById(R.id.bt_confirm);
         mBackButton = (Button) findViewById(R.id.bt_back);
 
@@ -64,7 +75,7 @@ public class SettingsActivity extends AppCompatActivity {
         mUserId = mAuth.getCurrentUser().getUid();
 
         mUserDb = FirebaseDatabase.getInstance().getReference()
-                .child(FirebaseEntry.TABLE_NAME).child(mUserId);
+                .child(FirebaseEntry.TABLE_USERS).child(mUserId);
 
         // Retrieve user's information to populate the settings text form.
         getUserInfo();
@@ -78,6 +89,34 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivityForResult(intent, REQUEST_IMAGE_CODE);
             }
         });
+
+        // Getting the Calendar pop up to get user's birthday
+        mBirthdayField.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Calendar calendar = Calendar.getInstance();
+                int year = calendar.get(Calendar.YEAR);
+                int month = calendar.get(Calendar.MONTH);
+                int day = calendar.get(Calendar.DAY_OF_MONTH);
+
+                DatePickerDialog dialog = new DatePickerDialog(SettingsActivity.this,
+                        android.R.style.Theme_Holo_Light_Dialog_MinWidth, mDateSetListener,
+                        year, month, day);
+                dialog.getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
+                dialog.show();
+            }
+        });
+
+        mDateSetListener = new DatePickerDialog.OnDateSetListener() {
+            @Override
+            public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                month += 1;
+                String date = month + "/" + dayOfMonth + "/" + year;
+                mBirthdayField.setText(date);
+                Log.d("Settings Activity", "onDateSet: mm/dd/yyyy " + month + "/" + dayOfMonth + "/" + year);
+            }
+        };
 
         // Saving customer info to the database
         mConfirmButton.setOnClickListener(new View.OnClickListener() {
@@ -97,6 +136,12 @@ public class SettingsActivity extends AppCompatActivity {
         });
     }
 
+    private void updateLabel() {
+        String myFormat = "MM/dd/yy";
+        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
+        mBirthdayField.setText(sdf.format(mUserCalendar.getTime()));
+    }
+
     private void getUserInfo() {
 
         mUserDb.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -112,10 +157,10 @@ public class SettingsActivity extends AppCompatActivity {
                         mNameField.setText(userInfo.get(FirebaseEntry.COLUMN_NAME).toString());
                     }
                     if(userInfo.get(FirebaseEntry.COLUMN_SEX) != null) {
-                        mUserSex = userInfo.get(FirebaseEntry.COLUMN_SEX).toString();
+                        mSex = userInfo.get(FirebaseEntry.COLUMN_SEX).toString();
                     }
-                    if(userInfo.get(FirebaseEntry.COLUMN_PHONE) != null) {
-                        mPhoneField.setText(userInfo.get(FirebaseEntry.COLUMN_PHONE).toString());
+                    if(userInfo.get(FirebaseEntry.COLUMN_BIRTHDAY) != null) {
+                        mBirthdayField.setText(userInfo.get(FirebaseEntry.COLUMN_BIRTHDAY).toString());
                     }
                     if(userInfo.get(FirebaseEntry.COLUMN_PROFILE_IMAGE_URL) != null) {
                         mProfileImageUrl = userInfo.get(FirebaseEntry.COLUMN_PROFILE_IMAGE_URL).toString();
@@ -143,11 +188,11 @@ public class SettingsActivity extends AppCompatActivity {
 
     private void saveUserInformation() {
         mName = mNameField.getText().toString();
-        mPhone = mPhoneField.getText().toString();
+        mBirthday = mBirthdayField.getText().toString();
 
         Map userInfo = new HashMap();
         userInfo.put(FirebaseEntry.COLUMN_NAME, mName);
-        userInfo.put(FirebaseEntry.COLUMN_PHONE, mPhone);
+        userInfo.put(FirebaseEntry.COLUMN_BIRTHDAY, mBirthday);
 
         mUserDb.updateChildren(userInfo);
 

@@ -21,9 +21,14 @@
         </activity>
         <activity android:name=".SignupActivity" />
         <activity android:name=".LoginActivity" />
-        <activity android:name=".SettingsActivity" />
-        <activity android:name=".matches.MatchesActivity" />
-        <activity android:name=".chat.ChatActivity"></activity>
+        <activity
+            android:name=".SettingsActivity"
+            android:label="@string/settings_activity_title" />
+        <activity
+            android:name=".matches.MatchesActivity"
+            android:label="@string/matches_activity_title" />
+        <activity android:name=".chat.ChatActivity" />
+        <activity android:name=".user.UserProfileActivity"></activity>
     </application>
 
 </manifest>

@@ -19,12 +19,6 @@
         android:paddingLeft="16dp">
 
         <TextView
-            android:id="@+id/tv_match_user_id"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            tools:text="5463"/>
-
-        <TextView
             android:id="@+id/tv_match_user_name"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

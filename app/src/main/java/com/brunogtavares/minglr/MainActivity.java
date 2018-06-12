@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mUsersDb = FirebaseDatabase.getInstance().getReference().child(FirebaseEntry.TABLE_NAME);
+        mUsersDb = FirebaseDatabase.getInstance().getReference().child(FirebaseEntry.TABLE_USERS);
 
         mSignoutButton = findViewById(R.id.bt_signout);
         mSettingsButton = findViewById(R.id.bt_settings);

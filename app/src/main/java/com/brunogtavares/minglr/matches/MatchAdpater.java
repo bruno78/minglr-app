@@ -27,6 +27,8 @@ public class MatchAdpater extends RecyclerView.Adapter<MatchAdpater.MatchViewHol
     private List<Match> mMatchesList;
     private Context mContext;
 
+    private String matchUserId;
+
     public MatchAdpater(List<Match> mMatchesList, Context context) {
         this.mContext = context;
         this.mMatchesList = mMatchesList;
@@ -49,8 +51,10 @@ public class MatchAdpater extends RecyclerView.Adapter<MatchAdpater.MatchViewHol
     @Override
     public void onBindViewHolder(@NonNull MatchViewHolder holder, int position) {
         Match match = mMatchesList.get(position);
-        holder.mMatchIdTextView.setText(match.getUserId());
         holder.mMatchUserNameTextView.setText(match.getName());
+
+        // Get the id for bundle
+        matchUserId = match.getUserId();
 
         if (!match.getProfileImageUrl().equals("default")) {
             Glide.with(mContext).load(match.getProfileImageUrl()).into(holder.mMatchUserPic);
@@ -65,13 +69,12 @@ public class MatchAdpater extends RecyclerView.Adapter<MatchAdpater.MatchViewHol
 
     public class MatchViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
-        public TextView mMatchIdTextView, mMatchUserNameTextView;
+        public TextView mMatchUserNameTextView;
         public ImageView mMatchUserPic;
 
         public MatchViewHolder(View itemView) {
             super(itemView);
 
-            mMatchIdTextView = (TextView) itemView.findViewById(R.id.tv_match_user_id);
             mMatchUserNameTextView = (TextView) itemView.findViewById(R.id.tv_match_user_name);
             mMatchUserPic = (ImageView) itemView.findViewById(R.id.iv_match_user_pic);
 
@@ -83,7 +86,7 @@ public class MatchAdpater extends RecyclerView.Adapter<MatchAdpater.MatchViewHol
         public void onClick(View view) {
             Intent intent = new Intent(view.getContext(), ChatActivity.class);
             Bundle bundle = new Bundle();
-            bundle.putString(ChatActivity.MATCH_KEY, mMatchIdTextView.getText().toString());
+            bundle.putString(ChatActivity.MATCH_KEY, matchUserId);
             intent.putExtras(bundle);
             view.getContext().startActivity(intent);
 
