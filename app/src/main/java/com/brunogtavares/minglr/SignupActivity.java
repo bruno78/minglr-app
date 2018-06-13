@@ -96,8 +96,6 @@ public class SignupActivity extends AppCompatActivity {
                                    // Log.i("Response","Failed to create user: "+task.getException().getMessage());
                                 }
                                 else {
-
-
                                     String userId = mAuth.getCurrentUser().getUid();
                                     DatabaseReference currentUserDb = FirebaseDatabase.getInstance()
                                             .getReference().child(FirebaseEntry.TABLE_USERS).child(userId);

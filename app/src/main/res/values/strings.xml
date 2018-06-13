@@ -14,4 +14,5 @@
     <string name="user_about">About me</string>
     <string name="birthday">Birthday</string>
     <string name="sex">Sex</string>
+    <string name="favorites">Favorites</string>
 </resources>

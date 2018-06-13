@@ -2,12 +2,18 @@ package com.brunogtavares.minglr;
 
 import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.text.SpannableString;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.brunogtavares.minglr.FirebaseData.FirebaseContract.FirebaseEntry;
@@ -34,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
     private CardAdapter mAdapter;
     private int i;
 
-    private Button mSignoutButton, mMatchesButton, mSettingsButton;
+    private Button mFavoritesButton, mMatchesButton, mResetButton;
 
     private FirebaseAuth mAuth;
 
@@ -53,8 +59,8 @@ public class MainActivity extends AppCompatActivity {
 
         mUsersDb = FirebaseDatabase.getInstance().getReference().child(FirebaseEntry.TABLE_USERS);
 
-        mSignoutButton = findViewById(R.id.bt_signout);
-        mSettingsButton = findViewById(R.id.bt_settings);
+        mFavoritesButton = findViewById(R.id.bt_favorites);
+        mResetButton = findViewById(R.id.bt_reset);
         mMatchesButton = findViewById(R.id.bt_matches);
 
         mAuth = FirebaseAuth.getInstance();
@@ -124,18 +130,20 @@ public class MainActivity extends AppCompatActivity {
         });
 
         // Adding a listener to signout button
-        mSignoutButton.setOnClickListener(new View.OnClickListener() {
+        mResetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                logoutUser();
+                Toast.makeText(MainActivity.this,
+                        "Resets all the nopes", Toast.LENGTH_SHORT).show();
             }
         });
 
         // Adding a listener to Settings button
-        mSettingsButton.setOnClickListener(new View.OnClickListener() {
+        mFavoritesButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                goToSettings();
+                Toast.makeText(MainActivity.this,
+                        "Takes to Favorites", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -156,6 +164,7 @@ public class MainActivity extends AppCompatActivity {
 
         currentUserConnectionsDB.addListenerForSingleValueEvent(new ValueEventListener() {
 
+            // Keeps looking for change of data in Firebase database content
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 if(dataSnapshot.exists()) {
@@ -188,6 +197,8 @@ public class MainActivity extends AppCompatActivity {
         final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         DatabaseReference userDb = mUsersDb.child(user.getUid());
         userDb.addListenerForSingleValueEvent(new ValueEventListener() {
+
+            // keeps looking for changes in the Firebase database
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 if (dataSnapshot.exists()) {
@@ -263,6 +274,27 @@ public class MainActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    // Handles the more options menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.options_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        switch(id) {
+            case R.id.item_settings_option:
+                goToSettings();
+                break;
+            case R.id.item_signout_option:
+                logoutUser();
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     private void logoutUser() {

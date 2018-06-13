@@ -1,21 +1,33 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:background="@drawable/gradient_background"
     tools:context="com.brunogtavares.minglr.MainActivity">
 
-    <LinearLayout
+    <com.lorentzos.flingswipe.SwipeFlingAdapterView
+        android:id="@+id/fs_frame"
+        android:background="@drawable/gradient_background"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent"
+        android:layout_above="@+id/ll_menu_bar"
+        app:rotation_degrees="15.5"
+        tools:context=".MainActivity" />
+
+    <LinearLayout
+        android:id="@+id/ll_menu_bar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true">
 
         <Button
-            android:id="@+id/bt_signout"
+            android:id="@+id/bt_reset"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/sign_out" />
+            android:text="reset" />
 
         <Button
             android:id="@+id/bt_matches"
@@ -25,19 +37,11 @@
             android:text="@string/matches_bt_label" />
 
         <Button
-            android:id="@+id/bt_settings"
+            android:id="@+id/bt_favorites"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/settings_bt_label" />
+            android:text="@string/favorites" />
 
     </LinearLayout>
 
-    <com.lorentzos.flingswipe.SwipeFlingAdapterView
-        android:id="@+id/fs_frame"
-        android:background="@android:color/white"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        app:rotation_degrees="15.5"
-        tools:context=".MainActivity" />
-
-</LinearLayout>
+</RelativeLayout>

@@ -53,12 +53,14 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
     private EditText mNameField, mBirthdayField, mAboutMeField;
     private Button mConfirmButton, mBackButton;
 
+    private String mUserId, mName, mBirthday, mProfileImageUrl, mSex, mAboutMe;
+
     private FirebaseAuth mAuth;
     private DatabaseReference mUserDb;
 
-    private String mUserId, mName, mBirthday, mProfileImageUrl, mSex, mAboutMe;
+    private ArrayAdapter<String> mSpinnerAdapter;
+    private Spinner mSpinnerDropdown;
 
-    private Calendar mUserCalendar;
     private DatePickerDialog.OnDateSetListener mDateSetListener;
 
     private Uri mResultUri;
@@ -96,12 +98,12 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
         });
 
         // Getting the spinner menu
-        Spinner dropdown = findViewById(R.id.sp_sex);
+        mSpinnerDropdown = findViewById(R.id.sp_sex);
         String[] items = new String[]{FirebaseEntry.COLUMN_SEX_MALE, FirebaseEntry.COLUMN_SEX_FEMALE};
-        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(this,
+        mSpinnerAdapter = new ArrayAdapter<>(this,
                 R.layout.support_simple_spinner_dropdown_item, items);
-        dropdown.setAdapter(spinnerAdapter);
-        dropdown.setOnItemSelectedListener(this);
+        mSpinnerDropdown.setAdapter(mSpinnerAdapter);
+        mSpinnerDropdown.setOnItemSelectedListener(this);
 
 
         // Getting the Calendar pop up to get user's birthday
@@ -165,7 +167,9 @@ public class SettingsActivity extends AppCompatActivity implements AdapterView.O
                         mNameField.setText(userInfo.get(FirebaseEntry.COLUMN_NAME).toString());
                     }
                     if(userInfo.get(FirebaseEntry.COLUMN_SEX) != null) {
-                        mSex = userInfo.get(FirebaseEntry.COLUMN_SEX).toString();
+                        int spinnerPosition =
+                                mSpinnerAdapter.getPosition(userInfo.get(FirebaseEntry.COLUMN_SEX).toString());
+                        mSpinnerDropdown.setSelection(spinnerPosition);
                     }
                     if(userInfo.get(FirebaseEntry.COLUMN_BIRTHDAY) != null) {
                         mBirthdayField.setText(userInfo.get(FirebaseEntry.COLUMN_BIRTHDAY).toString());
