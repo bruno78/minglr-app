@@ -31,8 +31,6 @@ public class SignupActivity extends AppCompatActivity {
     private RadioGroup mSexRadioGroup;
 
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,21 +45,6 @@ public class SignupActivity extends AppCompatActivity {
         mSignup = (Button) findViewById(R.id.bt_signup);
 
         mAuth = FirebaseAuth.getInstance();
-
-        firebaseAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-
-                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-                if(user != null) {
-                    Intent intent = new Intent(SignupActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                    return;
-                }
-            }
-        };
 
         mSignup.setOnClickListener(new View.OnClickListener(){
 
@@ -106,6 +89,9 @@ public class SignupActivity extends AppCompatActivity {
                                     userInfo.put(FirebaseEntry.COLUMN_PROFILE_IMAGE_URL, "default");
 
                                     currentUserDb.updateChildren(userInfo);
+
+                                    goToMainActivity();
+
                                 }
                             }
                         });
@@ -114,15 +100,9 @@ public class SignupActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(firebaseAuthStateListener);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        mAuth.removeAuthStateListener(firebaseAuthStateListener);
+    private void goToMainActivity() {
+        Intent intent = new Intent(SignupActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 }

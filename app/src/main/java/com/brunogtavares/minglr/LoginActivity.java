@@ -19,10 +19,7 @@ public class LoginActivity extends AppCompatActivity {
 
     private EditText mEmail, mPassword;
     private Button mLogin;
-
     private FirebaseAuth mAuth;
-    private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,21 +31,6 @@ public class LoginActivity extends AppCompatActivity {
         mLogin = (Button) findViewById(R.id.bt_login);
 
         mAuth = FirebaseAuth.getInstance();
-
-        firebaseAuthStateListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-
-                final FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-
-                if(user != null) {
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
-                    finish();
-                    return;
-                }
-            }
-        };
 
         mLogin.setOnClickListener(new View.OnClickListener(){
 
@@ -64,6 +46,9 @@ public class LoginActivity extends AppCompatActivity {
                                 if(!task.isSuccessful()) {
                                     Toast.makeText(LoginActivity.this, "Login error", Toast.LENGTH_SHORT).show();
                                 }
+                                else {
+                                    goToMainActivity();
+                                }
                             }
                         });
 
@@ -71,15 +56,10 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        mAuth.addAuthStateListener(firebaseAuthStateListener);
+    private void goToMainActivity() {
+        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+        startActivity(intent);
+        finish();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-        mAuth.removeAuthStateListener(firebaseAuthStateListener);
-    }
 }
