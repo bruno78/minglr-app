@@ -20,31 +20,70 @@
             android:layout_marginBottom="20dp"
             android:src="@mipmap/ic_launcher" />
 
-        <EditText
-            android:id="@+id/et_set_user_name"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:background="@null"
-            android:hint="@string/user_name" />
+            android:layout_marginBottom="20dp">
 
-        <EditText
-            android:id="@+id/et_set_user_birthday"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="20dp"
-            android:background="@null"
-            android:clickable="true"
-            android:inputType="date"
-            android:focusable="false"
-            android:hint="@string/birthday" />
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="@string/user_name"
+                android:layout_marginRight="5dp"
+                android:textSize="18sp"/>
 
-        <Spinner
-            android:id="@+id/sp_sex"
+            <EditText
+                android:id="@+id/et_set_user_name"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@null" />
+
+        </LinearLayout>
+
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:drawable/btn_dropdown"
-            android:spinnerMode="dropdown" />
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="@string/birthday"
+                android:textSize="18sp"/>
+
+            <EditText
+                android:id="@+id/et_set_user_birthday"
+                android:layout_weight="1"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:clickable="true"
+                android:inputType="date"
+                android:focusable="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="20dp">
+
+            <TextView
+                android:layout_width="80dp"
+                android:layout_height="wrap_content"
+                android:text="@string/sex"
+                android:layout_marginRight="5dp"
+                android:textSize="18sp"/>
+
+            <Spinner
+                android:id="@+id/sp_sex"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:drawable/btn_dropdown"
+                android:spinnerMode="dropdown" />
+
+        </LinearLayout>
 
         <EditText
             android:id="@+id/et_set_about_me"
@@ -68,13 +107,21 @@
             android:layout_weight="1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_marginRight="3dp"
+            android:background="#04db3d"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
             android:text="@string/confirm" />
 
         <Button
             android:id="@+id/bt_back"
             android:layout_weight="1"
             android:layout_width="0dp"
+            android:layout_marginLeft="3dp"
             android:layout_height="wrap_content"
+            android:background="#f73131"
+            android:textColor="@android:color/white"
+            android:textSize="18sp"
             android:text="@string/back" />
 
     </LinearLayout>

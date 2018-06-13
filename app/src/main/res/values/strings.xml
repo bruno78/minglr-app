@@ -13,4 +13,5 @@
     <string name="settings_activity_title">Settings</string>
     <string name="user_about">About me</string>
     <string name="birthday">Birthday</string>
+    <string name="sex">Sex</string>
 </resources>
