@@ -30,7 +30,7 @@ Android Studio
 - [ ] Add favorites feature
 - [ ] Add user preferences
 - [ ] Bring nopes back 
-- [ ] Improve chat
+- [ ] Allow users to send images to chat
 
 ## Problems faced 
 

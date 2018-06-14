@@ -8,8 +8,15 @@ public class Chat {
 
     private String message;
     private Boolean isCurrentUser;
+    private String imageUrl;
 
     public Chat(String message, Boolean isCurrentUser) {
+        this.message = message;
+        this.isCurrentUser = isCurrentUser;
+    }
+
+    public Chat(String message, Boolean isCurrentUser, String photo) {
+        this.imageUrl = photo;
         this.message = message;
         this.isCurrentUser = isCurrentUser;
     }
@@ -28,5 +35,13 @@ public class Chat {
 
     public void setCurrentUser(Boolean currentUser) {
         isCurrentUser = currentUser;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 }

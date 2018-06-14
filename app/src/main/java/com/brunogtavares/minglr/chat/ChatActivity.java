@@ -1,5 +1,7 @@
 package com.brunogtavares.minglr.chat;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
@@ -9,9 +11,15 @@ import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
+import com.brunogtavares.minglr.ChooseLoginRegistrationActivity;
 import com.brunogtavares.minglr.FirebaseData.FirebaseContract.FirebaseEntry;
 import com.brunogtavares.minglr.R;
+import com.google.android.gms.tasks.Continuation;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -19,6 +27,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -29,6 +40,8 @@ import java.util.Map;
 public class ChatActivity extends AppCompatActivity {
 
     public static final String MATCH_KEY = "matchId" ;
+    private static final int RC_PHOTO_PICKER = 100;
+    private static final String CHAT_PHOTOS_FOLDER = "chat_photos";
 
     private List<Chat> mChatList;
 
@@ -37,10 +50,13 @@ public class ChatActivity extends AppCompatActivity {
 
     private EditText mChatBox;
     private Button mSendButton;
+    private ImageButton mPhotoPickerButton;
 
     private String mCurrentUserId, mMatchId, mChatId;
 
     private DatabaseReference mUserDb, mChatDb;
+    private FirebaseStorage mFirebaseStorage;
+    private StorageReference mChatPhotosStorageReference;
 
 
     @Override
@@ -58,8 +74,13 @@ public class ChatActivity extends AppCompatActivity {
                 .child(mMatchId).child(FirebaseEntry.COLUMN_CHAT_ID);
         mChatDb = FirebaseDatabase.getInstance().getReference().child(FirebaseEntry.TABLE_CHAT);
 
+        // Image uploaded storage
+        mFirebaseStorage = FirebaseStorage.getInstance();
+        mChatPhotosStorageReference = mFirebaseStorage.getReference().child(CHAT_PHOTOS_FOLDER);
+
         mChatBox = (EditText) findViewById(R.id.et_chat_edit_text);
         mSendButton = (Button) findViewById(R.id.bt_chat_send_button);
+        mPhotoPickerButton = (ImageButton) findViewById(R.id.ib_photo_picker);
 
         mChatList = new ArrayList<>();
 
@@ -75,10 +96,25 @@ public class ChatActivity extends AppCompatActivity {
         mChatAdapter = new ChatAdapater(getChatData(), ChatActivity.this);
         mRecyclerView.setAdapter(mChatAdapter);
 
+        // Send text button
         mSendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 sendMessage();
+            }
+        });
+
+        // Send image button
+        mPhotoPickerButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //Fire an intent to show an image picker
+                Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+                intent.setType("image/*");
+                intent.putExtra(Intent.EXTRA_LOCAL_ONLY, true);
+                startActivityForResult(Intent.createChooser(intent,
+                        "Complete action using"), RC_PHOTO_PICKER);
             }
         });
     }
@@ -144,6 +180,50 @@ public class ChatActivity extends AppCompatActivity {
 
             }
         });
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == RC_PHOTO_PICKER && resultCode == RESULT_OK) {
+            final Uri selectedImageUri = data.getData();
+
+            // Get a reference to store file at chat_photos/<FILENAME>
+            final StorageReference photoRef =
+                    mChatPhotosStorageReference.child(selectedImageUri.getLastPathSegment());
+
+            // Upload file to Firebase Storage
+            photoRef.putFile(selectedImageUri).continueWithTask(
+                    new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
+
+                        @Override
+                public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
+                            if (!task.isSuccessful()) {
+                                throw task.getException();
+                            }
+                            return photoRef.getDownloadUrl();
+                }
+            }).addOnCompleteListener(new OnCompleteListener<Uri>() {
+                @Override
+                public void onComplete(@NonNull Task<Uri> task) {
+                    if (task.isSuccessful()) {
+                        Uri downloadUri = task.getResult();
+                        String imageUrl = downloadUri.toString();
+
+                        Map newImageMessage = new HashMap();
+                        newImageMessage.put(FirebaseEntry.COLUMN_CREATED_BY_USER, mCurrentUserId);
+                        newImageMessage.put(FirebaseEntry.COLUMN_IMAGE_URL, imageUrl);
+                        mChatDb.push().setValue(newImageMessage);
+
+                    }
+                    else {
+                        Toast.makeText(ChatActivity.this, "Upload failed: " + task.getException(),
+                                Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+
+        }
     }
 
     private void sendMessage() {

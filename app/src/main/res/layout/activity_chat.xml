@@ -25,7 +25,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true">
+
+        <ImageButton
+            android:id="@+id/ib_photo_picker"
+            android:layout_width="36dp"
+            android:layout_height="36dp"
+            android:background="@android:drawable/ic_menu_gallery"/>
 
         <EditText
             android:id="@+id/et_chat_edit_text"
@@ -38,8 +46,18 @@
             android:id="@+id/bt_chat_send_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:enabled="false"
             android:text="@string/send_label"/>
 
     </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"/>
 
 </RelativeLayout>
