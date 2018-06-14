@@ -8,10 +8,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.Editable;
+import android.text.InputFilter;
+import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.brunogtavares.minglr.ChooseLoginRegistrationActivity;
@@ -42,6 +47,7 @@ public class ChatActivity extends AppCompatActivity {
     public static final String MATCH_KEY = "matchId" ;
     private static final int RC_PHOTO_PICKER = 100;
     private static final String CHAT_PHOTOS_FOLDER = "chat_photos";
+    private static final int DEFAULT_MSG_LENGTH_LIMIT = 300;
 
     private List<Chat> mChatList;
 
@@ -51,6 +57,7 @@ public class ChatActivity extends AppCompatActivity {
     private EditText mChatBox;
     private Button mSendButton;
     private ImageButton mPhotoPickerButton;
+    private ProgressBar mProgressBar;
 
     private String mCurrentUserId, mMatchId, mChatId;
 
@@ -67,6 +74,7 @@ public class ChatActivity extends AppCompatActivity {
         // Getting info from MatchAdapter
         mMatchId = getIntent().getExtras().getString(MATCH_KEY);
 
+        // Firebase
         mCurrentUserId = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
         mUserDb = FirebaseDatabase.getInstance().getReference().child(FirebaseEntry.TABLE_USERS)
@@ -74,13 +82,18 @@ public class ChatActivity extends AppCompatActivity {
                 .child(mMatchId).child(FirebaseEntry.COLUMN_CHAT_ID);
         mChatDb = FirebaseDatabase.getInstance().getReference().child(FirebaseEntry.TABLE_CHAT);
 
-        // Image uploaded storage
+        // Image upload storage
         mFirebaseStorage = FirebaseStorage.getInstance();
         mChatPhotosStorageReference = mFirebaseStorage.getReference().child(CHAT_PHOTOS_FOLDER);
+
 
         mChatBox = (EditText) findViewById(R.id.et_chat_edit_text);
         mSendButton = (Button) findViewById(R.id.bt_chat_send_button);
         mPhotoPickerButton = (ImageButton) findViewById(R.id.ib_photo_picker);
+        mProgressBar = (ProgressBar) findViewById(R.id.pb_chat_progressBar);
+
+        // Initialize progress bar
+        mProgressBar.setVisibility(ProgressBar.INVISIBLE);
 
         mChatList = new ArrayList<>();
 
@@ -95,6 +108,32 @@ public class ChatActivity extends AppCompatActivity {
 
         mChatAdapter = new ChatAdapater(getChatData(), ChatActivity.this);
         mRecyclerView.setAdapter(mChatAdapter);
+
+        // Set limit to chatBox input
+        mChatBox.setFilters(new InputFilter[]{new InputFilter.LengthFilter(DEFAULT_MSG_LENGTH_LIMIT)});
+
+        // Only enable Send button when there's text to send
+        mChatBox.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int start, int before, int count) {
+                if (charSequence.toString().trim().length() > 0) {
+                    mSendButton.setEnabled(true);
+                }
+                else {
+                    mSendButton.setEnabled(false);
+                }
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
+            }
+        });
 
         // Send text button
         mSendButton.setOnClickListener(new View.OnClickListener() {
@@ -144,6 +183,7 @@ public class ChatActivity extends AppCompatActivity {
                 if (dataSnapshot.exists()) {
                     String message = null;
                     String createByUser = null;
+                    String image = null;
 
                     if (dataSnapshot.child(FirebaseEntry.COLUMN_CHAT_TEXT).getValue() != null) {
                         message = dataSnapshot.child(FirebaseEntry.COLUMN_CHAT_TEXT).getValue().toString();
@@ -151,9 +191,18 @@ public class ChatActivity extends AppCompatActivity {
                     if (dataSnapshot.child(FirebaseEntry.COLUMN_CREATED_BY_USER).getValue() != null) {
                         createByUser = dataSnapshot.child(FirebaseEntry.COLUMN_CREATED_BY_USER).getValue().toString();
                     }
+                    if (dataSnapshot.child(FirebaseEntry.COLUMN_IMAGE_URL).getValue() != null) {
+                        image = dataSnapshot.child(FirebaseEntry.COLUMN_IMAGE_URL).getValue().toString();
+                    }
                     if (message != null && createByUser != null) {
                         Boolean isCurrentUser = createByUser.equals(mCurrentUserId);
                         Chat newMessage = new Chat(message, isCurrentUser);
+                        mChatList.add(newMessage);
+                        mChatAdapter.notifyDataSetChanged();
+                    }
+                    if (image != null && createByUser != null) {
+                        Boolean isCurrentUser = createByUser.equals(mCurrentUserId);
+                        Chat newMessage = new Chat(null, isCurrentUser, image);
                         mChatList.add(newMessage);
                         mChatAdapter.notifyDataSetChanged();
                     }
@@ -187,6 +236,7 @@ public class ChatActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         if(requestCode == RC_PHOTO_PICKER && resultCode == RESULT_OK) {
             final Uri selectedImageUri = data.getData();
+            Log.d("ChatActivity", selectedImageUri.toString());
 
             // Get a reference to store file at chat_photos/<FILENAME>
             final StorageReference photoRef =
@@ -214,7 +264,6 @@ public class ChatActivity extends AppCompatActivity {
                         newImageMessage.put(FirebaseEntry.COLUMN_CREATED_BY_USER, mCurrentUserId);
                         newImageMessage.put(FirebaseEntry.COLUMN_IMAGE_URL, imageUrl);
                         mChatDb.push().setValue(newImageMessage);
-
                     }
                     else {
                         Toast.makeText(ChatActivity.this, "Upload failed: " + task.getException(),
