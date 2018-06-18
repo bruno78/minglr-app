@@ -29,8 +29,9 @@ Android Studio
 - [ ] Add user profiles
 - [ ] Add favorites feature
 - [ ] Add user preferences
+- [ ] Add AdMob
 - [ ] Bring nopes back 
-- [ ] Allow users to send images to chat
+- [x] Allow users to send images to chat
 
 ## Problems faced 
 
