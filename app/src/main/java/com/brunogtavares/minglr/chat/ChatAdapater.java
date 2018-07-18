@@ -9,10 +9,12 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.brunogtavares.minglr.R;
+import com.bumptech.glide.Glide;
 
 import java.util.List;
 
@@ -44,17 +46,36 @@ public class ChatAdapater extends RecyclerView.Adapter<ChatAdapater.ChatViewHold
 
     @Override
     public void onBindViewHolder(@NonNull ChatViewHolder holder, int position) {
+
         Chat chatMessage = mChatList.get(position);
-        holder.mChatMessage.setText(chatMessage.getMessage());
-        if (chatMessage.getCurrentUser()) {
-            holder.mChatMessage.setGravity(Gravity.END);
-            holder.mChatMessage.setTextColor(Color.parseColor("#404040"));
-            holder.mChatMessageContainer.setBackgroundColor(Color.parseColor("#F4F4F4"));
+
+        // Handling image view, if there's no image, hide the image view
+        boolean isPhoto = chatMessage.getImageUrl() != null;
+        if (isPhoto) {
+            // hide the text view
+            holder.mChatMessage.setVisibility(View.GONE);
+            holder.mChatImage.setVisibility(View.VISIBLE);
+            Glide.with(holder.mChatImage.getContext())
+                    .load(chatMessage.getImageUrl())
+                    .into(holder.mChatImage);
         }
         else {
-            holder.mChatMessage.setGravity(Gravity.START);
-            holder.mChatMessage.setTextColor(Color.parseColor("#FFFFFF"));
-            holder.mChatMessageContainer.setBackgroundColor(Color.parseColor("#2DB4C8"));
+            holder.mChatMessage.setVisibility(View.VISIBLE);
+            holder.mChatImage.setVisibility(View.GONE);
+
+            holder.mChatMessage.setText(chatMessage.getMessage());
+
+            // Direction of the text
+            if (chatMessage.getCurrentUser()) {
+                holder.mChatMessage.setGravity(Gravity.END);
+                holder.mChatMessage.setTextColor(Color.parseColor("#404040"));
+                holder.mChatMessageContainer.setBackgroundColor(Color.parseColor("#F4F4F4"));
+            }
+            else {
+                holder.mChatMessage.setGravity(Gravity.START);
+                holder.mChatMessage.setTextColor(Color.parseColor("#FFFFFF"));
+                holder.mChatMessageContainer.setBackgroundColor(Color.parseColor("#2DB4C8"));
+            }
         }
 
     }
@@ -67,6 +88,7 @@ public class ChatAdapater extends RecyclerView.Adapter<ChatAdapater.ChatViewHold
     public class ChatViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
 
         public TextView mChatMessage;
+        public ImageView mChatImage;
         public LinearLayout mChatMessageContainer;
 
         public ChatViewHolder(View itemView) {
@@ -74,6 +96,7 @@ public class ChatAdapater extends RecyclerView.Adapter<ChatAdapater.ChatViewHold
             itemView.setOnClickListener(this);
 
             mChatMessage = itemView.findViewById(R.id.tv_chat_message);
+            mChatImage = itemView.findViewById(R.id.iv_chat_image);
             mChatMessageContainer = itemView.findViewById(R.id.ll_text_container);
         }
 
