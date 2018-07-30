@@ -1,7 +1,7 @@
 # Minglr - Dating App
 
 <p align="center">
- <ima src="https://cdn.rawgit.com/bruno78/minglr-app/250502ce/app/src/main/ic_launcher-web.png" />
+ <img src="https://cdn.rawgit.com/bruno78/minglr-app/250502ce/app/src/main/ic_launcher-web.png" />
 </p>
 
 It's a clone of Tinder dating App where users can see cards of other users and swipe left for "nope" or right for "yep".
