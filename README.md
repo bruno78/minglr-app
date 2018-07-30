@@ -20,8 +20,43 @@ If two users swipe "yep" for each other, a match is made and they can chat to ea
 
 ## Getting Started 
 
-This app uses the Gradle build system. To build this project, use the "gradlew build" command or use "Import Project"
-Android Studio
+This app uses the Gradle build system and [Google's Firebase](https://firebase.google.com/). 
+
+To add Firebase, go to [Firebase console](https://console.firebase.google.com/):
+
+1. Create a project, and follow the instructions to get google-services.json file. Once 
+the file is downloaded, copy and paste to the app's folder. 
+
+2. Go to the newly created project and choose Authentication. On the Sing-in method tab, choose Email/Password
+provider
+
+3. Go to the database and activate "Realtime Database". On the rules tab make sure only authenticated
+users have access by setting up the configuration to this:
+
+```json
+{
+  "rules": {
+    ".read": "auth != null",
+    ".write": "auth != null"
+  }
+}
+
+```
+4. Go to Storage and activate storage. On the rules tab make sure it's configured to this:
+
+```
+service firebase.storage {
+  match /b/{bucket}/o {
+    match /{allPaths=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+}
+```
+
+NOTE: This app won't work without Firebase. 
+
+Once Firebase is properly setup, build this project by using the "gradlew build" command or use "Import Project" Android Studio. 
 
 ## To do:
 
@@ -33,91 +68,6 @@ Android Studio
 - [ ] Bring nopes back 
 - [x] Allow users to send images to chat
 
-## Problems faced 
+## Issues 
 
-1. "General" error on sign up
-
-**Solution**: On Signup activity, at `mAuth.createUserWithEmailAndPassword`, if task is not successful, add these lines:
-
-```java
-    if(!task.isSuccessful()) {
- 
-        Toast.makeText(SignupActivity.this,
-            "Sign up error: " + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
-        Log.i(SignupActivity.this, "Failed to create user: " + task.getException().getMessage());
-    }
-```
-
-2. App crashes if users try to login leaving password field in blank
-
-**Solution**:
-
-3. App crashes on launch
-
-```java
-E/dalvikvm: Could not find class 'android.support.v4.graphics.drawable.DrawableWrapper', 
-referenced from method android.support.v7.widget.DrawableUtils.canSafelyMutateDrawable
-```
-Error on inflate ChooseLoginRegistration Activitiy 
-on `setContentView(R.layout.activity_choose_login_registration);`
-
-**Solution:** Update all the dependencies from 26.0.1 to 27.1.1
-
-4. taskSnapshot.getDownload() can't be recognized.
-
-Replace:
-
-```java
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    finish();
-                }
-            });
-
-            uploadTask.addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-                    Uri downloadUrl = taskSnapshot.getDownloadUrl();
-                }
-            })
-
-```
-
-By 
-
-```java
-                        Task<Uri> urlTask = uploadTask.continueWithTask(new Continuation<UploadTask.TaskSnapshot, Task<Uri>>() {
-                            @Override
-                            public Task<Uri> then(@NonNull Task<UploadTask.TaskSnapshot> task) throws Exception {
-                                if (!task.isSuccessful()) {
-                                    throw task.getException();
-                                }
-            
-                                // Continue with the task to get the download URL.
-                                return filepath.getDownloadUrl();
-                            }
-            
-                        }).addOnCompleteListener(new OnCompleteListener<Uri>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Uri> task) {
-                                if(task.isSuccessful()) {
-            
-                                    Uri downloadUrl = task.getResult();
-                                    Map userInfo = new HashMap();
-                                    userInfo.put(FirebaseEntry.COLUMN_PROFILE_IMAGE_URL, downloadUrl.toString());
-                                    mUserDb.updateChildren(userInfo);
-                                    Toast.makeText(SettingsActivity.this, "Message saved successfully!", Toast.LENGTH_SHORT).show();
-            
-                                    finish();
-                                    return;
-                                }
-                                else {
-                                    Toast.makeText(SettingsActivity.this, "Unable to download file!", Toast.LENGTH_SHORT).show();
-                                }
-                            }
-                        });
-
-```
-
-More info: https://firebase.google.com/docs/storage/android/upload-files#get_a_download_url
+The list of open issues and solutions can be found at the github repo or click [here](https://github.com/bruno78/minglr-app/blob/master/TECHNICAL.md)
